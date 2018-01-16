@@ -3,7 +3,7 @@
 ### Prerequisites:
 
 * [Vagrant 2.0.0 +](https://www.vagrantup.com/downloads.html)
-* [Ansible 2.4.0.0 +](http://docs.ansible.com/ansible/latest/intro_installation.html#latest-releases-on-mac-osx)
+* [Ansible 2.4.0.0 +](http://docs.ansible.com/ansible/latest/intro_installation.html#installation)
 * [VirtualBox 5.1.28 +](https://www.virtualbox.org/wiki/Downloads)
 
 ### About:
