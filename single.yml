@@ -1,0 +1,231 @@
+---
+
+- hosts: 'node1'
+  become: true
+  become_user: root
+  
+  tasks:
+  
+  - name: Copying The THP Disable Script
+    template:
+      src: templates/thp.j2
+      dest: /etc/systemd/system/disable-thp.service
+      owner: root
+      group: root
+      mode: 0664 
+      
+  - name: Running THP Disable Script
+    service:
+      name: disable-thp
+      state: started
+      enabled: yes
+
+  - name: Disabling Selinux
+    selinux:
+      policy: targeted
+      state: disabled
+
+  - name: Removing Any Previous MariaDB Repo
+    file:
+      path: /etc/yum.repos.d/mariadb.repo
+      state: absent
+
+  - name: Getting MariaDB Repos
+    get_url:
+      url: https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
+      dest: /tmp/mariadb_repo_setup
+      
+  - name: Activation MariaDB Repos
+    shell: bash /tmp/mariadb_repo_setup
+        
+  - name: Installing Additional Packages
+    yum: 
+      name={{ item }}
+      state=present
+    with_items:
+      - epel-release
+      - nano
+      - git
+      - mlocate
+
+  - name: Upgrading All Yum Packages
+    yum:
+      name: '*'
+      state: latest
+          
+  - name: Installing MariaDB Items
+    yum:
+      name={{ item }}
+      state=present
+    with_items:
+      - MariaDB-server
+      - MariaDB-client
+      - MariaDB-connect-engine
+      - MariaDB-oqgraph-engine
+      - MariaDB-tokudb-engine
+      - MariaDB-rocksdb-engine
+      - MariaDB-backup
+      - MariaDB-shared
+      - MariaDB-devel
+      - MySQL-python      
+
+  - name: Creating Shadow Group
+    group:
+      name: shadow
+      state: present
+
+  - name: Setting Shadow Permissions
+    file:
+      path: /etc/shadow
+      owner: root
+      group: shadow
+      mode: 0040
+ 
+  - name: Copying MariaDB PAM Config
+    copy:
+      src: scripts/mariadb
+      dest: /etc/pam.d/mariadb
+      owner: root
+      group: root
+      mode: 0644  
+ 
+  - name: Copying Key Creation Script
+    copy:
+      src: scripts/create_keys.sh
+      dest: /tmp/create_keys.sh
+      owner: root
+      group: root
+      mode: 0500
+      
+  - name: Running Key Creation Script
+    shell: bash /tmp/create_keys.sh    
+       
+  - name: Creating Server Config
+    template:
+      src: templates/server.j2
+      dest: /etc/my.cnf.d/server.cnf
+      owner: root
+      group: root
+      mode: 0644   
+
+  - name: Creating MySQL log folder
+    file:
+      path: /var/log/mysql
+      state: directory
+      mode: 0755
+      owner: mysql
+      group: mysql
+
+  - name: Starting MySQL
+    service: 
+      name: mysql
+      state: started
+  
+  - name: Removing Anonymous MySQL Account
+    mysql_user:
+      name: ''
+      host_all: yes
+      state: absent
+
+  - name: "Removing root@{{ ansible_nodename }}"
+    mysql_user:
+      name: root
+      host: "{{ ansible_nodename }}"
+      state: absent
+
+  - name: "Removeing root@::1"
+    mysql_user:
+      name: root
+      host: "::1"
+      state: absent
+
+  - name: Removing Test Database
+    mysql_db:
+      name: test
+      state: absent
+
+  - name: Add DBA User
+    mysql_user:
+      name: "{{ dba_user }}"
+      host: 'localhost'
+      password: "{{ dba_pass }}"
+      update_password: on_create
+      priv: '*.*:ALL,GRANT'
+      state: present  
+
+  - name: Add DBA User
+    mysql_user:
+      name: "{{ dba_user }}"
+      host: '127.0.0.1'
+      password: "{{ dba_pass }}"
+      update_password: on_create
+      priv: '*.*:ALL,GRANT'
+      state: present  
+
+  - name: Add DBA User
+    mysql_user:
+      name: "{{ dba_user }}"
+      host: '10.%'
+      password: "{{ dba_pass }}"
+      update_password: on_create
+      priv: '*.*:ALL,GRANT'
+      state: present
+
+  - name: Adding SST User
+    mysql_user:
+      name: "{{ sst_user }}"
+      password: "{{ sst_pass }}"
+      host: "10.%"
+      priv: '*.*:RELOAD,LOCK TABLES,REPLICATION CLIENT,CREATE TABLESPACE,PROCESS,SUPER,CREATE,INSERT,SELECT'
+      state: present 
+
+  - name: Adding SST User
+    mysql_user:
+      name: "{{ sst_user }}"
+      password: "{{ sst_pass }}"
+      host: "localhost"
+      priv: '*.*:RELOAD,LOCK TABLES,REPLICATION CLIENT,CREATE TABLESPACE,PROCESS,SUPER,CREATE,INSERT,SELECT'
+      state: present 
+
+  - name: Activating Spider Plugin
+    mysql_db:
+      state: import
+      name: all
+      target: /usr/share/mysql/install_spider.sql
+
+  - name: Copying Additional Setup Script
+    copy: 
+      src: sql/setup.sql
+      dest: /tmp
+     
+  - name: Running Additional Setup Script          
+    mysql_db:
+      state: import
+      name: all
+      target: /tmp/setup.sql
+      
+  - name: Checking A Final Time For Updates
+    yum:
+      name: '*'
+      state: latest
+ 
+  - name: Adding MySQL User To Shadow Group
+    user:
+      name: mysql
+      groups: mysql,shadow
+      append: yes
+
+  - name: Restarting MySQL
+    service: 
+      name: mysql
+      state: restarted
+
+  - name: Git Cloning Sample MySQL Data
+    git:
+      repo: https://github.com/datacharmer/test_db.git
+      dest: /tmp/test_db
+
+  - name: Importing Sample Data
+    shell: mysql < employees.sql
+    args:
+      chdir: /tmp/test_db

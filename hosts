@@ -1,0 +1,8 @@
+[mysql]
+node1 ansible_host=10.10.10.10 ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/node1/virtualbox/private_key ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[all:vars]
+dba_user=dba
+dba_pass=demo_password
+sst_user=sst
+sst_pass=demo_password
