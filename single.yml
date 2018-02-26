@@ -20,11 +20,6 @@
       state: started
       enabled: yes
 
-  - name: Disabling Selinux
-    selinux:
-      policy: targeted
-      state: disabled
-
   - name: Removing Any Previous MariaDB Repo
     file:
       path: /etc/yum.repos.d/mariadb.repo
