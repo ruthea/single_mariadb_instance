@@ -88,19 +88,6 @@ log_warnings                    	= 2
 log_slow_verbosity              	= query_plan
 long_query_time                 	= 5
 
-#################################################################
-## Encryption Settings
-#################################################################
-plugin-load-add                  	= file_key_management
-file_key_management
-file_key_management_filename     	= /etc/my.cnf.d/keys.txt
-innodb_encrypt_tables            	= FORCE
-innodb_encrypt_log               	= ON
-innodb_encryption_threads       	= 4
-innodb_tablespaces_encryption
-encrypt_tmp_files                	= ON
-encrypt_binlog                   	= ON
-
 ################################################################
 # InnoDB Variables
 ################################################################
@@ -163,6 +150,19 @@ server_audit_logging            	= 1
 server_audit_output_type        	= file
 server_audit_file_path          	= /var/log/mysql/mariadb-audit.log
 server_audit_events	            	= query_ddl
+
+#################################################################
+## Encryption Settings
+#################################################################
+plugin_load_add                 	= "file_key_management.so"
+file_key_management
+file_key_management_filename    	= /etc/my.cnf.d/keys.txt
+innodb_encrypt_tables           	= FORCE
+innodb_encrypt_log              	= ON
+innodb_encryption_threads       	= 4
+innodb_tablespaces_encryption
+encrypt_tmp_files               	= ON
+encrypt_binlog                  	= ON
 
 ################################################################
 # Standard Replication Settings
