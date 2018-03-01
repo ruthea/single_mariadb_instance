@@ -130,7 +130,7 @@
       host: "{{ ansible_nodename }}"
       state: absent
 
-  - name: "Removeing root@::1"
+  - name: "Removing root@::1"
     mysql_user:
       name: root
       host: "::1"

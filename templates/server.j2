@@ -50,19 +50,6 @@ max_connect_errors              	= 1000000
 #ssl_key                         	=
 #ssl_cert                        	=
 
-#################################################################
-## Encryption Settings
-#################################################################
-plugin-load-add                  	= file_key_management.so
-file_key_management
-file_key_management_filename     	= /etc/my.cnf.d/keys.txt
-innodb_encrypt_tables            	= FORCE
-innodb_tablespaces_encryption
-innodb_encrypt_log               	= ON
-innodb_encryption_threads       	= 4
-encrypt_tmp_files                	= ON
-encrypt_binlog                   	= ON
-
 ################################################################
 # Caches, Buffers & Connections
 ################################################################
@@ -101,12 +88,23 @@ log_warnings                    	= 2
 log_slow_verbosity              	= query_plan
 long_query_time                 	= 5
 
+#################################################################
+## Encryption Settings
+#################################################################
+plugin-load-add                  	= file_key_management
+file_key_management
+file_key_management_filename     	= /etc/my.cnf.d/keys.txt
+innodb_encrypt_tables            	= FORCE
+innodb_encrypt_log               	= ON
+innodb_encryption_threads       	= 4
+innodb_tablespaces_encryption
+encrypt_tmp_files                	= ON
+encrypt_binlog                   	= ON
+
 ################################################################
 # InnoDB Variables
 ################################################################
 innodb_file_per_table           	= 1
-innodb_file_format              	= Barracuda
-innodb_file_format_max          	= Barracuda
 innodb_buffer_pool_size         	= {{ (ansible_memtotal_mb/1024 * 0.66)|round|int }}G
 innodb_buffer_pool_instances    	= {{ (ansible_memtotal_mb/1024 * 0.66)|round|int }}
 innodb_page_cleaners           		= {{ [(ansible_memtotal_mb/1024 * 0.66),64]|min|round|int }}
