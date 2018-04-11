@@ -38,7 +38,7 @@ Open a terminal window and change to a folder of your choosing. Run the followin
 1. `git clone https://github.com/toddstoffel/single_mariadb_instance.git`
 1. cd into cloned folder
 1. `vagrant plugin install vagrant-vbguest`
-1. `vagrant up && ansible-playbook -i hosts single.yml`
+1. `vagrant up && ansible-playbook -i inventory provision.yml`
 1. `vagrant ssh node1`
 
 The virtualbox image can be removed by running `vagrant destroy --force` in the folder where it was created.

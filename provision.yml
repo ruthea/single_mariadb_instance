@@ -116,7 +116,7 @@
   - name: Starting MySQL
     service: 
       name: mysql
-      state: started
+      state: restarted
   
   - name: Removing Anonymous MySQL Account
     mysql_user:
