@@ -95,7 +95,7 @@
   - name: Running Key Creation Script
     shell: bash /tmp/create_keys.sh    
  
- ## TO DO -  ENCRYPT keys.txt file here
+ ## TO DO -  ENCRYPT keys.txt file here & setup SSL Certs
        
   - name: Creating Server Config
     template:

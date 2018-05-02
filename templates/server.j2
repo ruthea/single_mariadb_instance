@@ -22,8 +22,8 @@ tmpdir                          	= /tmp
 socket                          	= /var/lib/mysql/mysql.sock
 port                            	= 3306
 pid-file                        	= /var/lib/mysql/mysql.pid
-server_id                       	= {{ ansible_enp0s8['ipv4']['address']|regex_replace("\.", "" )}}
-gtid_domain_id                  	= {{ ansible_enp0s8['ipv4']['address']|regex_replace("\.", "") }}
+server_id                       	= {{ vars['ansible_' + ethernet_interface]['ipv4']['address']|regex_replace("\.", "" )}}
+gtid_domain_id                  	= {{ vars['ansible_' + ethernet_interface]['ipv4']['address']|regex_replace("\.", "" )}}
 character_set_server            	= utf8
 collation_server                	= utf8_general_ci
 init_connect                    	= 'SET NAMES utf8'
@@ -63,8 +63,8 @@ thread_pool_size                	= {{ ansible_processor_vcpus }}
 max_connections                 	= 500
 wait_timeout                    	= 600
 interactive_timeout             	= 600
-tmp_table_size                  	= {{ (ansible_memtotal_mb/512)|round|int }}M
-max_heap_table_size             	= {{ (ansible_memtotal_mb/512)|round|int }}M
+tmp_table_size                  	= {{ [(ansible_memtotal_mb/512),16]|max|round|int }}M
+max_heap_table_size             	= {{ [(ansible_memtotal_mb/512),16]|max|round|int }}M
 
 ################################################################
 # MySQL Logs
@@ -87,17 +87,18 @@ long_query_time                 	= 5
 ################################################################
 innodb_file_per_table           	= ON
 innodb_buffer_pool_size         	= {{ (ansible_memtotal_mb/1024 * 0.66)|round|int }}G
-innodb_buffer_pool_instances    	= {{ (ansible_memtotal_mb/1024 * 0.66)|round|int }}
-innodb_page_cleaners           		= {{ [(ansible_memtotal_mb/1024 * 0.66),64]|min|round|int }}
+innodb_page_cleaners           		= {{ [[(ansible_memtotal_mb/1024 * 0.66),4]|max,64]|min|round|int }}
 innodb_flush_log_at_trx_commit  	= 1
 innodb_flush_method             	= O_DIRECT
-innodb_log_files_in_group       	= {{ (((ansible_memtotal_mb/1024 * 0.66)/2)+1)|round|int }}
+innodb_log_files_in_group       	= {{ [[(((ansible_memtotal_mb/1024 * 0.66)/2)+1),2]|max,100]|min|round|int }}
 innodb_log_buffer_size          	= 32M
 innodb_log_file_size            	= 1G
 innodb_autoinc_lock_mode        	= 2
 innodb_rollback_on_timeout      	= ON
 innodb_thread_concurrency       	= {{ (ansible_processor_vcpus * 2) }}
 innodb_force_primary_key        	= ON
+innodb_print_all_deadlocks      	= ON
+innodb_defragment               	= ON
 
 ################################################################
 # MariaDB Optimizer Switches
@@ -148,12 +149,11 @@ server_audit_events	            	= query_ddl
 ## Encryption Settings
 #################################################################
 plugin_load_add                 	= "file_key_management.so"
-aria-encrypt-tables
-file_key_management
 file_key_management_filename    	= /etc/my.cnf.d/keys.txt
+file_key_management             	= ON
+aria_encrypt_tables             	= ON
 innodb_encrypt_tables           	= ON
 innodb_encrypt_log              	= ON
-innodb_encryption_threads       	= 4
 innodb_tablespaces_encryption   	= ON
 encrypt_tmp_files               	= ON
 encrypt_tmp_disk_tables         	= ON
@@ -183,7 +183,7 @@ sysdate_is_now                  	= ON
 #wsrep_slave_threads             	= {{ ansible_processor_vcpus }}
 #wsrep_cluster_name              	= galera_cluster
 #wsrep_node_name                 	= {{ ansible_nodename }}
-#wsrep_node_address              	= {{ ansible_enp0s8['ipv4']['address'] }}
+#wsrep_node_address              	= {{ vars['ansible_' + ethernet_interface]['ipv4']['address'] }}
 #wsrep_forced_binlog_format      	= ROW
 #wsrep_sst_method                	= xtrabackup-v2
 #wsrep_sst_auth                  	= {{ sst_user }}:{{ sst_pass }}
