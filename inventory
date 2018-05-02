@@ -5,5 +5,6 @@ node1 ansible_host=10.10.10.10 ansible_user=vagrant ansible_ssh_private_key_file
 ethernet_interface=enp0s8
 dba_user=dba
 dba_pass=demo_password
+cluster_name=galera_cluster
 sst_user=sst
 sst_pass=demo_password

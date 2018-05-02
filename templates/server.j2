@@ -181,7 +181,7 @@ sysdate_is_now                  	= ON
 #wsrep_provider                  	= /usr/lib64/galera/libgalera_smm.so
 #wsrep_provider_options          	= "gcs.fc_limit=32;gcache.size=2G;gcache.recover=yes"
 #wsrep_slave_threads             	= {{ ansible_processor_vcpus }}
-#wsrep_cluster_name              	= galera_cluster
+#wsrep_cluster_name              	= {{ cluster_name }}
 #wsrep_node_name                 	= {{ ansible_nodename }}
 #wsrep_node_address              	= {{ vars['ansible_' + ethernet_interface]['ipv4']['address'] }}
 #wsrep_forced_binlog_format      	= ROW
@@ -205,4 +205,3 @@ sysdate_is_now                  	= ON
 #user                            	= {{ sst_user }}
 #password                        	= {{ sst_pass }}
 #socket                          	= /var/lib/mysql/mysql.sock
-
