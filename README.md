@@ -51,4 +51,3 @@ The virtualbox image can be removed by running `vagrant destroy --force` in the 
 ### Need Additional Help?
 
 * [Consulting](https://mariadb.com/services/consulting)
-* [Enterprise Architect](https://mariadb.com/services/enterprise-architect)
