@@ -1,5 +1,3 @@
-### Ansible Managed - {{lookup('pipe','date +%m/%d/%Y_%I:%M:%S_%p')}}
-
 ###############################################################
 # General Settings
 ###############################################################
@@ -91,7 +89,7 @@ innodb_page_cleaners           		= {{ [[(ansible_memtotal_mb/1024 * 0.66),4]|max
 innodb_flush_log_at_trx_commit  	= 1
 innodb_flush_method             	= O_DIRECT
 innodb_log_files_in_group       	= {{ [[(((ansible_memtotal_mb/1024 * 0.66)/2)+1),2]|max,100]|min|round|int }}
-innodb_log_buffer_size          	= 32M
+innodb_log_buffer_size          	= 16M
 innodb_log_file_size            	= 1G
 innodb_autoinc_lock_mode        	= 2
 innodb_rollback_on_timeout      	= ON
@@ -145,63 +143,64 @@ server_audit_output_type        	= file
 server_audit_file_path          	= /var/log/mysql/mariadb-audit.log
 server_audit_events	            	= query_ddl
 
-#################################################################
-## Encryption Settings
-#################################################################
-plugin_load_add                 	= "file_key_management.so"
-file_key_management_filename    	= /etc/my.cnf.d/keys.txt
-file_key_management             	= ON
-aria_encrypt_tables             	= ON
-innodb_encrypt_tables           	= ON
-innodb_encrypt_log              	= ON
-innodb_tablespaces_encryption   	= ON
-encrypt_tmp_files               	= ON
-encrypt_tmp_disk_tables         	= ON
-encrypt_binlog                  	= ON
+################################################################
+# Encryption Settings
+################################################################
+{% if encryption_on == 'true' %}
+{% include 'encryption.j2' %}
+{% raw %}
+{% endraw %}
+{% else %}
+{% filter comment('plain',prefix='',postfix='') %}
+{% include 'encryption.j2' %}
+{% endfilter %}
+{% endif %}
 
 ################################################################
 # Standard Replication Settings
 ################################################################
-log_slave_updates               	= ON
-read_only                       	= ON
-relay_log                       	= /var/log/mysql/mariadb-relay
-relay_log_index                 	= /var/log/mysql/mariadb-relay.index
-relay-log-info-file             	= /var/log/mysql/mariadb-relay.info
-report_host                     	= {{ ansible_nodename }}
-slave_parallel_mode             	= conservative
-slave_domain_parallel_threads   	= 2
-slave_parallel_threads          	= 2
-sysdate_is_now                  	= ON
+{% if replication_on == 'true' %}
+{% include 'replication.j2' %}
+{% raw %}
+{% endraw %}
+{% else %}
+{% filter comment('plain',prefix='',postfix='') %}
+{% include 'replication.j2' %}
+{% endfilter %}
+{% endif %}
 
-#################################################################
-## Galera Settings
-#################################################################
-#wsrep_on                        	= ON
-#wsrep_cluster_address           	= gcomm://
-#wsrep_provider                  	= /usr/lib64/galera/libgalera_smm.so
-#wsrep_provider_options          	= "gcs.fc_limit=32;gcache.size=2G;gcache.recover=yes"
-#wsrep_slave_threads             	= {{ ansible_processor_vcpus }}
-#wsrep_cluster_name              	= {{ cluster_name }}
-#wsrep_node_name                 	= {{ ansible_nodename }}
-#wsrep_node_address              	= {{ vars['ansible_' + ethernet_interface]['ipv4']['address'] }}
-#wsrep_forced_binlog_format      	= ROW
-#wsrep_sst_method                	= xtrabackup-v2
-#wsrep_sst_auth                  	= {{ sst_user }}:{{ sst_pass }}
+################################################################
+# Galera Settings
+################################################################
+{% if galera_on == 'true' %}
+{% include 'galera.j2' %}
+{% raw %}
+{% endraw %}
+{% else %}
+{% filter comment('plain',prefix='',postfix='') %}
+{% include 'galera.j2' %}
+{% endfilter %}
+{% endif %}
 
-#################################################################
-## Galera SST Settings
-#################################################################
-#[sst]
-#streamfmt                       	= xbstream
-#transferfmt                     	= socat
-#compressor                      	= pigz
-#decompressor                    	= "pigz -dc"
-#inno-apply-opts                 	= "--use-memory=1G"
+################################################################
+# Galera SST Settings
+################################################################
+{% if galera_on == 'true' %}
+{% include 'sst.j2' %}
+{% raw %}
+{% endraw %}
+{% else %}
+{% filter comment('plain',prefix='',postfix='') %}
+{% include 'sst.j2' %}
+{% endfilter %}
+{% endif %}
 
-#################################################################
-## XtraBackup Settings
-#################################################################
-#[xtrabackup]
-#user                            	= {{ sst_user }}
-#password                        	= {{ sst_pass }}
-#socket                          	= /var/lib/mysql/mysql.sock
+################################################################
+# XtraBackup Settings
+################################################################
+[xtrabackup]
+user                            	= {{ sst_user }}
+password                        	= {{ sst_pass }}
+socket                          	= /var/lib/mysql/mysql.sock
+{% raw %}
+{% endraw %}

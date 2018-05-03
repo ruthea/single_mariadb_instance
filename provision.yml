@@ -1,19 +1,19 @@
 ---
 
-- hosts: 'node1'
+- hosts: 'mariadb1'
   become: true
   become_user: root
-  
+
   tasks:
-  
+
   - name: Copying The THP Disable Script
     template:
       src: templates/thp.j2
       dest: /etc/systemd/system/disable-thp.service
       owner: root
       group: root
-      mode: 0664 
-      
+      mode: 0664
+
   - name: Running THP Disable Script
     service:
       name: disable-thp
@@ -29,12 +29,12 @@
     get_url:
       url: https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
       dest: /tmp/mariadb_repo_setup
-      
+
   - name: Activation MariaDB Repos
-    shell: bash /tmp/mariadb_repo_setup
-        
+    shell: bash /tmp/mariadb_repo_setup --mariadb-server-version={{ mariadb_version}} --mariadb-maxscale-version={{ maxscale_version }}
+
   - name: Installing Additional Packages
-    yum: 
+    yum:
       name={{ item }}
       state=present
     with_items:
@@ -47,7 +47,7 @@
     yum:
       name: '*'
       state: latest
-          
+
   - name: Installing MariaDB Items
     yum:
       name={{ item }}
@@ -62,7 +62,7 @@
       - MariaDB-backup
       - MariaDB-shared
       - MariaDB-devel
-      - MySQL-python      
+      - MySQL-python
 
   - name: Creating Shadow Group
     group:
@@ -75,15 +75,15 @@
       owner: root
       group: shadow
       mode: 0040
- 
+
   - name: Copying MariaDB PAM Config
     copy:
       src: scripts/mariadb
       dest: /etc/pam.d/mariadb
       owner: root
       group: root
-      mode: 0644  
- 
+      mode: 0644
+
   - name: Copying Key Creation Script
     copy:
       src: scripts/create_keys.sh
@@ -91,19 +91,19 @@
       owner: root
       group: root
       mode: 0500
-      
+
   - name: Running Key Creation Script
-    shell: bash /tmp/create_keys.sh    
- 
+    shell: bash /tmp/create_keys.sh
+
  ## TO DO -  ENCRYPT keys.txt file here & setup SSL Certs
-       
+
   - name: Creating Server Config
     template:
-      src: templates/server.j2
+      src: templates/general.j2
       dest: /etc/my.cnf.d/server.cnf
       owner: root
       group: root
-      mode: 0644   
+      mode: 0644
 
   - name: Creating MySQL log folder
     file:
@@ -114,10 +114,10 @@
       group: mysql
 
   - name: Starting MySQL
-    service: 
+    service:
       name: mysql
       state: restarted
-  
+
   - name: Removing Anonymous MySQL Account
     mysql_user:
       name: ''
@@ -148,7 +148,7 @@
       password: "{{ dba_pass }}"
       update_password: on_create
       priv: '*.*:ALL,GRANT'
-      state: present  
+      state: present
 
   - name: Add DBA User
     mysql_user:
@@ -157,7 +157,7 @@
       password: "{{ dba_pass }}"
       update_password: on_create
       priv: '*.*:ALL,GRANT'
-      state: present  
+      state: present
 
   - name: Add DBA User
     mysql_user:
@@ -174,7 +174,7 @@
       password: "{{ sst_pass }}"
       host: "10.%"
       priv: '*.*:RELOAD,LOCK TABLES,REPLICATION CLIENT,CREATE TABLESPACE,PROCESS,SUPER,CREATE,INSERT,SELECT'
-      state: present 
+      state: present
 
   - name: Adding SST User
     mysql_user:
@@ -182,7 +182,7 @@
       password: "{{ sst_pass }}"
       host: "localhost"
       priv: '*.*:RELOAD,LOCK TABLES,REPLICATION CLIENT,CREATE TABLESPACE,PROCESS,SUPER,CREATE,INSERT,SELECT'
-      state: present 
+      state: present
 
   - name: Activating Spider Plugin
     mysql_db:
@@ -191,21 +191,21 @@
       target: /usr/share/mysql/install_spider.sql
 
   - name: Copying Additional Setup Script
-    copy: 
+    copy:
       src: sql/setup.sql
       dest: /tmp
-     
-  - name: Running Additional Setup Script          
+
+  - name: Running Additional Setup Script
     mysql_db:
       state: import
       name: all
       target: /tmp/setup.sql
-      
+
   - name: Checking A Final Time For Updates
     yum:
       name: '*'
       state: latest
- 
+
   - name: Adding MySQL User To Shadow Group
     user:
       name: mysql
@@ -213,7 +213,7 @@
       append: yes
 
   - name: Restarting MySQL
-    service: 
+    service:
       name: mysql
       state: restarted
 
