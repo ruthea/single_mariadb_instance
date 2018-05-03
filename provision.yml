@@ -31,7 +31,7 @@
       dest: /tmp/mariadb_repo_setup
 
   - name: Activation MariaDB Repos
-    shell: bash /tmp/mariadb_repo_setup --mariadb-server-version={{ mariadb_version}} --mariadb-maxscale-version={{ maxscale_version }}
+    shell: $(which bash) /tmp/mariadb_repo_setup --mariadb-server-version={{ mariadb_version}} --mariadb-maxscale-version={{ maxscale_version }}
 
   - name: Installing Additional Packages
     yum:
@@ -111,7 +111,7 @@
       dest: /etc/systemd/system/mariadb.service.d/timeouts.conf
 
   - name: Reloading Systemd
-    command: systemctl daemon-reload 
+    command: systemctl daemon-reload
 
   - name: Creating MySQL log folder
     file:
