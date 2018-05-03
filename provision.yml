@@ -105,6 +105,14 @@
       group: root
       mode: 0644
 
+  - name: Installing/Updating timeouts.conf Template
+    template:
+      src: templates/timeouts.j2
+      dest: /etc/systemd/system/mariadb.service.d/timeouts.conf
+
+  - name: Reloading Systemd
+    command: systemctl daemon-reload 
+
   - name: Creating MySQL log folder
     file:
       path: /var/log/mysql
