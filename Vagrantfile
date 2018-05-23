@@ -18,16 +18,6 @@ Vagrant.configure("2") do |config|
 								vb.name = "node"+(1+n).to_s
 						end
 					end
-                                        if cc.vm.hostname == "node2" then
-                                                 cc.vm.box = "bento/centos-7.4"
-                                                 cc.vm.box_check_update = true
-                                                 cc.vm.network "forwarded_port", guest: 3306, host: 3307
-                                                 cc.vm.provider :virtualbox do |vb|
-                                                                vb.gui = false
-                                                                vb.memory = "1024"
-                                                                vb.name = "node"+(1+n).to_s
-                                                end
-                                        end
 		end
 	end
 end
