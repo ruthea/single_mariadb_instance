@@ -1,0 +1,35 @@
+---
+
+- hosts: 'mariadb1'
+  become: true
+  become_user: root
+
+  tasks:
+
+  - name: "Installing Golang"
+    yum:
+      name: golang
+      state: present
+
+  - name: "Creating 'gh-ost' Folder"
+    file:
+      path: /usr/local/go/src/github.com/github
+      state: directory
+
+  - name: "Cloning 'gh-ost' Application From Github.com"
+    git:
+      repo: https://github.com/github/gh-ost.git
+      dest: /usr/local/go/src/github.com/github/gh-ost
+      clone: yes
+
+  - name: "Building 'gh-ost' Application"
+    shell: export GOPATH='/usr/local/go' && $(which bash) build.sh
+    args:
+      chdir: /usr/local/go/src/github.com/github/gh-ost
+
+  - name: "Moving 'gh-ost' Binary To /usr/local/bin"
+    copy:
+      src: /tmp/gh-ost/gh-ost
+      dest: /usr/local/bin
+      remote_src: yes
+      mode: 0111
