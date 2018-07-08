@@ -4,6 +4,8 @@ INSTALL SONAME 'ha_connect';
 INSTALL SONAME 'ha_rocksdb';
 INSTALL SONAME 'auth_pam';
 
+SET GLOBAL enforce_storage_engine=NULL;
+
 CREATE ROLE IF NOT EXISTS 'admin';
 GRANT ALL PRIVILEGES ON *.* TO 'admin' WITH GRANT OPTION;
 CREATE USER IF NOT EXISTS 'vagrant'@'%' IDENTIFIED VIA pam USING 'mariadb';

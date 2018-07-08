@@ -192,12 +192,6 @@
       priv: '*.*:RELOAD,LOCK TABLES,REPLICATION CLIENT,CREATE TABLESPACE,PROCESS,SUPER,CREATE,INSERT,SELECT'
       state: present
 
-  - name: Activating Spider Plugin
-    mysql_db:
-      state: import
-      name: all
-      target: /usr/share/mysql/install_spider.sql
-
   - name: Copying Additional Setup Script
     copy:
       src: sql/setup.sql
@@ -208,6 +202,12 @@
       state: import
       name: all
       target: /tmp/setup.sql
+
+  - name: Activating Spider Plugin
+    mysql_db:
+      state: import
+      name: all
+      target: /usr/share/mysql/install_spider.sql
 
   - name: Checking A Final Time For Updates
     yum:
