@@ -84,6 +84,7 @@ long_query_time                 	= 5
 # InnoDB Variables
 ################################################################
 innodb_file_per_table           	= ON
+innodb_buffer_pool_instances    	= 8
 innodb_buffer_pool_size         	= {{ (ansible_memtotal_mb/1024 * 0.66)|round|int }}G
 innodb_page_cleaners            	= {{ [[(ansible_memtotal_mb/1024 * 0.66),4]|max,64]|min|round|int }}
 innodb_flush_log_at_trx_commit  	= 1
@@ -140,6 +141,7 @@ optimizer_switch                	= extended_keys=on
 optimizer_switch                	= exists_to_in=on
 optimizer_switch                	= orderby_uses_equalities=on
 optimizer_switch                	= condition_pushdown_for_derived=on
+optimizer_switch                	= split_materialized=on
 
 ################################################################
 # MariaDB Audit
