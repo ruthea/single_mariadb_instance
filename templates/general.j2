@@ -167,17 +167,11 @@ server_audit_events	            	= query_ddl
 {% endfilter %}
 {% endif %}
 
-################################################################
-# XtraBackup Settings
-################################################################
-[xtrabackup]
-user                            	= {{ sst_user }}
-password                        	= {{ sst_pass }}
-socket                          	= /var/lib/mysql/mysql.sock
-{% raw %}
-{% endraw %}
 
 ################################################################
 # Notes
 ################################################################
-# 1. Benchmark your iops before adjusting https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/benchmark_procedures.html
+
+# 1. Benchmark your iops before adjusting (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/benchmark_procedures.html)
+{% raw %}
+{% endraw %}

@@ -15,6 +15,7 @@ Vagrant.configure("2") do |config|
 						cc.vm.provider :virtualbox do |vb|
 								vb.gui = false
 								vb.memory = "4096"
+								vb.cpus = 4
 								vb.name = "node"+(1+n).to_s
 						end
 					end
