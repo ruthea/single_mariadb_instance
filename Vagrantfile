@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
 					cc.vm.host_name = "node" + (1+n).to_s
 					cc.vm.network :private_network, ip: "10.10.10.1" + n.to_s
 					if cc.vm.hostname == "node1" then
-						cc.vm.box = "bento/centos-7.4"
+						cc.vm.box = "centos/7"
 						cc.vm.box_check_update = true
 						cc.vm.network "forwarded_port", guest: 3306, host: 3307
 						cc.vm.provider :virtualbox do |vb|
