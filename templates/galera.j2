@@ -1,5 +1,5 @@
 wsrep_on                        	= ON
-wsrep_cluster_address           	= gcomm://{{ hostvars.mariadb1.ansible_host }},{{ hostvars.mariadb2.ansible_host }},{{ hostvars.mariadb3.ansible_host }}
+wsrep_cluster_address           	= gcomm://{{ hostvars.mariadb1.ansible_host }}
 wsrep_provider                  	= /usr/lib64/galera/libgalera_smm.so
 wsrep_provider_options          	= "gcs.fc_limit=32;gcache.size=2G;gcache.recover=yes"
 wsrep_slave_threads             	= {{ ansible_processor_vcpus }}
