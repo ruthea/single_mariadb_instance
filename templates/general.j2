@@ -66,11 +66,11 @@ max_heap_table_size             	= {{ [(ansible_memtotal_mb/512),16]|max|round|i
 ################################################################
 # MySQL Logs
 ################################################################
-binlog_format                   	= ROW
-binlog_row_image                	= FULL
-sync_binlog                     	= 0
-log_bin                         	= /var/log/mysql/mariadb-bin
-log_bin_index                   	= /var/log/mysql/mariadb-bin.index
+#binlog_format                   	= ROW
+#binlog_row_image                	= FULL
+#sync_binlog                     	= 0
+#log_bin                         	= /var/log/mysql/mariadb-bin
+#log_bin_index                   	= /var/log/mysql/mariadb-bin.index
 expire_logs_days                	= 3
 log_error                       	= /var/log/mysql/mariadb-error.log
 slow_query_log                  	= ON
@@ -96,7 +96,7 @@ innodb_io_capacity              	= 1000 ### See Note 1 ###
 innodb_autoinc_lock_mode        	= 2
 innodb_rollback_on_timeout      	= ON
 innodb_thread_concurrency       	= {{ (ansible_processor_vcpus * 2) }}
-innodb_force_primary_key        	= ON
+###innodb_force_primary_key        	= ON
 innodb_print_all_deadlocks      	= ON
 innodb_defragment               	= ON
 
