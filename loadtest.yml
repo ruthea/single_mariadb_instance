@@ -1,3 +1,8 @@
+- hosts: 'loadtest1'
+  become: true
+  become_user: root
+
+  tasks:
 - name: "Installing Additional Packages"
     yum:
       name: "{{ packages }}"
