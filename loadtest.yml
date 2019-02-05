@@ -1,0 +1,8 @@
+- name: "Installing Additional Packages"
+    yum:
+      name: "{{ packages }}"
+      state: present
+    vars:
+      packages:
+        - ftp://ftp.ntua.gr/pub/databases/mysql/Downloads/MySQL-5.7/mysql-community-common-5.7.25-1.el7.x86_64.rpm
+        - ftp://ftp.ntua.gr/pub/databases/mysql/Downloads/MySQL-5.7/mysql-community-libs-5.7.25-1.el7.x86_64.rpm
