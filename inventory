@@ -1,16 +1,16 @@
 [mariadb]
 mariadb1 ansible_host=10.10.10.10 ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/node1/virtualbox/private_key ansible_ssh_common_args='-o StrictHostKeyChecking=no'
-mariadb2 ansible_host=10.10.10.11 ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/node2/virtualbox/private_key ansible_ssh_common_args='-o StrictHostKeyChecking=no'
-mariadb3 ansible_host=10.10.10.12 ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/node3/virtualbox/private_key ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 
-[maxscale]
-maxscale1 ansible_host=10.10.10.13 ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/node4/virtualbox/private_key ansible_ssh_common_args="-o StrictHostKeyChecking=no"
-maxscale2 ansible_host=10.10.10.14 ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/node5/virtualbox/private_key ansible_ssh_common_args="-o StrictHostKeyChecking=no"
+#[maxscale]
+#maxscale1 ansible_host=10.10.10.13 ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/node4/virtualbox/private_key ansible_ssh_common_args="-o StrictHostKeyChecking=no"
+
+#[loadtest]
+#loadtest1
 
 [all:vars]
 mariadb_version=mariadb-10.3
 maxscale_version=2.3
-encryption_on=true
+encryption_on=false
 replication_on=false
 galera_on=false
 galera_name=galera_cluster
