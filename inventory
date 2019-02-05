@@ -1,5 +1,5 @@
 [mariadb]
-mariadb1 ansible_host=10.10.10.10 ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/node1/virtualbox/private_key ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+mariadb1 ansible_host=10.10.10.10 ansible_user=ec2-user ansible_ssh_private_key_file=~/Downloads/test.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 
 #[maxscale]
 #maxscale1 ansible_host=10.10.10.13 ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/node4/virtualbox/private_key ansible_ssh_common_args="-o StrictHostKeyChecking=no"
