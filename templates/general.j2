@@ -52,25 +52,27 @@ explicit_defaults_for_timestamp 	= ON
 ################################################################
 query_cache_type                	= 0
 query_cache_size                	= 0
-thread_handling                 	= pool-of-threads
+##thread_handling                 	= pool-of-threads 
 open_files_limit                	= 65535
 table_definition_cache          	= 4096
 table_open_cache                	= 4096
-thread_pool_size                	= {{ ansible_processor_vcpus }}
+##thread_pool_size                	= {{ ansible_processor_vcpus }}
 max_connections                 	= 500
 wait_timeout                    	= 600
 interactive_timeout             	= 600
 tmp_table_size                  	= {{ [(ansible_memtotal_mb/512),16]|max|round|int }}M
 max_heap_table_size             	= {{ [(ansible_memtotal_mb/512),16]|max|round|int }}M
-
+thread_cache_size                 = 100
 ################################################################
 # MySQL Logs
 ################################################################
-#binlog_format                   	= ROW
-#binlog_row_image                	= FULL
-#sync_binlog                     	= 0
-#log_bin                         	= /var/log/mysql/mariadb-bin
-#log_bin_index                   	= /var/log/mysql/mariadb-bin.index
+binlog_format                   	= ROW
+binlog_row_image                	= FULL
+binlog_cache_size                   = 256K
+binlog_stmt_cache_size              = 128K
+sync_binlog                     	= 0
+log_bin                             = /var/lib/mysql/binlog/mariadb-bin
+log_bin_index                       = /var/lib/mysql/binlog/mariadb-bin.index
 expire_logs_days                	= 3
 log_error                       	= /var/log/mysql/mariadb-error.log
 slow_query_log                  	= ON
@@ -92,29 +94,32 @@ innodb_flush_log_at_trx_commit  	= 1
 innodb_log_files_in_group       	= 2
 innodb_log_buffer_size          	= 64M
 innodb_log_file_size            	= {{ [[(((ansible_memtotal_mb/1024 * 0.33)/2)),1]|max,15]|min|round|int }}G
-innodb_io_capacity              	= 1000 ### See Note 1 ###
+innodb_io_capacity              	= 50000 ### See Note 1 ###
 innodb_autoinc_lock_mode        	= 2
 innodb_rollback_on_timeout      	= ON
-innodb_thread_concurrency       	= {{ (ansible_processor_vcpus * 2) }}
+##innodb_thread_concurrency       	= {{ (ansible_processor_vcpus * 2) }}
 ###innodb_force_primary_key        	= ON
 innodb_print_all_deadlocks      	= ON
 innodb_defragment               	= ON
+nnodb_flush_method                 = O_DIRECT
+innodb_max_dirty_pages_pct          = 50
+innodb_stats_sample_pages           = 32
 
 ################################################################
 # RocksDB Variables
 ################################################################
-plugin_load                     	= ha_rocksdb.so
-rocksdb_bulk_load               	= 1
-rocksdb_max_row_locks           	= 10000
+#plugin_load                     	= ha_rocksdb.so
+#rocksdb_bulk_load               	= 1
+#rocksdb_max_row_locks           	= 10000
 
 ################################################################
 # MariaDB Audit
 ################################################################
-plugin_load_add                 	= "server_audit.so"
-server_audit_logging            	= ON
-server_audit_output_type        	= file
-server_audit_file_path          	= /var/log/mysql/mariadb-audit.log
-server_audit_events	            	= query_ddl
+#plugin_load_add                 	= "server_audit.so"
+#server_audit_logging            	= ON
+#server_audit_output_type        	= file
+#server_audit_file_path          	= /var/log/mysql/mariadb-audit.log
+#server_audit_events	            	= query_ddl
 
 ################################################################
 # Optimizer Switches
@@ -134,44 +139,6 @@ server_audit_events	            	= query_ddl
 {% endfilter %}
 {% endif %}
 
-################################################################
-# Standard Replication Settings
-################################################################
-{% if replication_on == 'true' %}
-{% include 'replication.j2' %}
-{% raw %}
-{% endraw %}
-{% else %}
-{% filter comment('plain',prefix='',postfix='') %}
-{% include 'replication.j2' %}
-{% endfilter %}
-{% endif %}
-
-################################################################
-# Galera Settings
-################################################################
-{% if galera_on == 'true' %}
-{% include 'galera.j2' %}
-{% raw %}
-{% endraw %}
-{% else %}
-{% filter comment('plain',prefix='',postfix='') %}
-{% include 'galera.j2' %}
-{% endfilter %}
-{% endif %}
-
-################################################################
-# Galera SST Settings
-################################################################
-{% if galera_on == 'true' %}
-{% include 'sst.j2' %}
-{% raw %}
-{% endraw %}
-{% else %}
-{% filter comment('plain',prefix='',postfix='') %}
-{% include 'sst.j2' %}
-{% endfilter %}
-{% endif %}
 
 ################################################################
 # Notes
