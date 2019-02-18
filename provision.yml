@@ -172,7 +172,7 @@
   - name: Add DBA User
     mysql_user:
       name: "{{ dba_user }}"
-      host: '10.%'
+      host: '%'
       password: "{{ dba_pass }}"
       update_password: on_create
       priv: '*.*:ALL,GRANT'
@@ -182,7 +182,7 @@
     mysql_user:
       name: "{{ sst_user }}"
       password: "{{ sst_pass }}"
-      host: "10.%"
+      host: "%"
       priv: '*.*:RELOAD,LOCK TABLES,REPLICATION CLIENT,CREATE TABLESPACE,PROCESS,SUPER,CREATE,INSERT,SELECT'
       state: present
 
